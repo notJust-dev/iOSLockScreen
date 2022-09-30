@@ -7,10 +7,18 @@ import dayjs from "dayjs";
 import NotificationsList from "./src/components/NotificationsList";
 import SwipeUpToOpen from "./src/components/SwipeUpToOpen";
 
-import Animated, { SlideInDown, SlideInUp } from "react-native-reanimated";
+import Animated, {
+  SlideInDown,
+  SlideInUp,
+  useSharedValue,
+  useAnimatedStyle,
+  interpolate,
+} from "react-native-reanimated";
 
 export default function App() {
   const [date, setDate] = useState(dayjs());
+
+  const footerVisibility = useSharedValue(1);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,10 +28,16 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  const animatedFooterStyle = useAnimatedStyle(() => ({
+    marginTop: interpolate(footerVisibility.value, [0, 1], [-85, 0]),
+    opacity: footerVisibility.value,
+  }));
+
   return (
     <ImageBackground source={wallpaper} style={styles.container}>
       {/* Notification List */}
       <NotificationsList
+        footerVisibility={footerVisibility}
         ListHeaderComponent={() => (
           <Animated.View entering={SlideInUp} style={styles.header}>
             <Ionicons name="ios-lock-closed" size={20} color="white" />
@@ -33,7 +47,10 @@ export default function App() {
         )}
       />
 
-      <Animated.View entering={SlideInDown} style={styles.footer}>
+      <Animated.View
+        entering={SlideInDown}
+        style={[styles.footer, animatedFooterStyle]}
+      >
         <View style={styles.icon}>
           <MaterialCommunityIcons name="flashlight" size={24} color="white" />
         </View>
