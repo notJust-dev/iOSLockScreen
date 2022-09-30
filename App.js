@@ -5,6 +5,7 @@ import wallpaper from "./assets/images/wallpaper.webp";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import NotificationsList from "./src/components/NotificationsList";
+import SwipeUpToOpen from "./src/components/SwipeUpToOpen";
 
 import Animated, { SlideInDown, SlideInUp } from "react-native-reanimated";
 
@@ -36,6 +37,8 @@ export default function App() {
         <View style={styles.icon}>
           <MaterialCommunityIcons name="flashlight" size={24} color="white" />
         </View>
+
+        <SwipeUpToOpen />
 
         <View style={styles.icon}>
           <Ionicons name="ios-camera" size={24} color="white" />
@@ -72,6 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: "auto",
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 30,
     height: 75,
