@@ -70,7 +70,6 @@ export default function App() {
           <Ionicons name="ios-camera" size={24} color="white" />
         </View>
       </Animated.View>
-
     </ImageBackground>
   );
 }
@@ -78,7 +77,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "stretch",
+    width: "100%",
   },
   header: {
     alignItems: "center",

@@ -12,6 +12,7 @@ import Animated, {
   Extrapolate,
   useDerivedValue,
 } from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 
 export const NOTIFICATION_HEIGHT = 80;
 
@@ -77,15 +78,17 @@ const NotificationItem = ({
   });
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      <Image source={data.icon} style={styles.icon} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{data.title}</Text>
-        <Text style={styles.subtitle} numberOfLines={2}>
-          {data.subtitle}
-        </Text>
-      </View>
-      <Text style={styles.time}>{data.createdAt} ago</Text>
+    <Animated.View style={animatedStyle}>
+      <BlurView intensity={100} tint="dark" style={styles.container}>
+        <Image source={data.icon} style={styles.icon} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{data.title}</Text>
+          <Text style={styles.subtitle} numberOfLines={2}>
+            {data.subtitle}
+          </Text>
+        </View>
+        <Text style={styles.time}>{data.createdAt} ago</Text>
+      </BlurView>
     </Animated.View>
   );
 };
@@ -93,13 +96,14 @@ const NotificationItem = ({
 const styles = StyleSheet.create({
   container: {
     height: NOTIFICATION_HEIGHT - 10,
-    backgroundColor: "#00000075",
+    // backgroundColor: "#00000075",
     margin: 5,
     marginHorizontal: 10,
     padding: 13,
     borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
+    overflow: "hidden",
   },
   time: {
     color: "lightgray",

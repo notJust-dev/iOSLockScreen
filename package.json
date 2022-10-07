@@ -14,7 +14,8 @@
     "expo-status-bar": "~1.4.0",
     "react": "18.0.0",
     "react-native": "0.69.6",
-    "react-native-reanimated": "~2.9.1"
+    "react-native-reanimated": "~2.9.1",
+    "expo-blur": "~11.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
