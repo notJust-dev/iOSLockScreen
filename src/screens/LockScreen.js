@@ -15,6 +15,7 @@ import SwipeUpToOpen from "../components/SwipeUpToOpen";
 import home2 from "../../assets/images/home2.jpg";
 
 import { PanGestureHandler } from "react-native-gesture-handler";
+import { BlurView } from "expo-blur";
 
 import Animated, {
   SlideInDown,
@@ -26,7 +27,10 @@ import Animated, {
   useAnimatedGestureHandler,
   withTiming,
   Easing,
+  useAnimatedProps,
 } from "react-native-reanimated";
+
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 export default function App() {
   const [date, setDate] = useState(dayjs());
@@ -83,6 +87,14 @@ export default function App() {
     },
   });
 
+  const homeScreenBlur = useAnimatedProps(() => ({
+    intensity: interpolate(y.value, [0, height], [0, 100]),
+  }));
+
+  const lockScreenBlur = useAnimatedProps(() => ({
+    intensity: interpolate(y.value, [0, height], [100, 0]),
+  }));
+
   const Header = useMemo(
     () => (
       <Animated.View entering={SlideInUp} style={styles.header}>
@@ -100,14 +112,22 @@ export default function App() {
       <ImageBackground
         source={home2}
         style={{ width: "100%", height: "100%", ...StyleSheet.absoluteFill }}
-      >
-        {/* <PanGestureHandler onGestureEvent={unlockGestureHandler}>
-          <Animated.View style={styles.panGestureContainerLock} />
-        </PanGestureHandler> */}
-      </ImageBackground>
+      ></ImageBackground>
       {/* Lock Screen */}
+      <AnimatedBlurView
+        animatedProps={homeScreenBlur}
+        style={{ width: "100%", height: "100%", ...StyleSheet.absoluteFill }}
+      />
       <Animated.View style={[styles.container, animatedContainerStyle]}>
         <ImageBackground source={wallpaper} style={styles.container}>
+          <AnimatedBlurView
+            animatedProps={lockScreenBlur}
+            style={{
+              width: "100%",
+              height: "100%",
+              ...StyleSheet.absoluteFill,
+            }}
+          />
           {/* Notification List */}
           <NotificationsList
             footerVisibility={footerVisibility}
