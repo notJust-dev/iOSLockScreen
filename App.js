@@ -1,5 +1,6 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import bg from "./assets/images/bg.jpeg";
 import SensorAnimatedImage from "./src/components/SensorAnimatedImage";
 import Parallax from "./src/components/Parallax";
@@ -12,12 +13,13 @@ import layer4 from "./assets/images/Parallax/5.png";
 
 const App = () => {
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       {/* <Parallax layers={[layer1, layer2, layer3, layer4]} /> */}
+      
       <LockScreen />
 
       <StatusBar style="dark" />
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

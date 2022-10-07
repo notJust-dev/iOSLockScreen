@@ -1,10 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
-import { StyleSheet, Text, View, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  useWindowDimensions,
+  Image,
+} from "react-native";
 import wallpaper from "../../assets/images/wallpaper.webp";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import NotificationsList from "../components/NotificationsList";
 import SwipeUpToOpen from "../components/SwipeUpToOpen";
+import home2 from "../../assets/images/home2.jpg";
+
+import { PanGestureHandler } from "react-native-gesture-handler";
 
 import Animated, {
   SlideInDown,
@@ -13,10 +23,15 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   useDerivedValue,
+  useAnimatedGestureHandler,
+  withTiming,
+  Easing,
 } from "react-native-reanimated";
 
 export default function App() {
   const [date, setDate] = useState(dayjs());
+  const { height } = useWindowDimensions();
+  const y = useSharedValue(height);
 
   const footerVisibility = useSharedValue(1);
   const footerHeight = useDerivedValue(() =>
@@ -36,6 +51,38 @@ export default function App() {
     opacity: footerVisibility.value,
   }));
 
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: withTiming(y.value - height, {
+          duration: 100,
+          easing: Easing.linear,
+        }),
+      },
+    ],
+  }));
+
+  const unlockGestureHandler = useAnimatedGestureHandler({
+    onActive: (event) => {
+      y.value = event.absoluteY;
+    },
+    onEnd: (event) => {
+      if (event.velocityY < -500) {
+        // unlock
+        y.value = withTiming(0, { easing: Easing.linear });
+      } else if (event.velocityY > 500) {
+        // reset
+        y.value = withTiming(height, { easing: Easing.linear });
+      } else if (y.value < height / 2 || event.velocityY < -500) {
+        // unlock
+        y.value = withTiming(0, { easing: Easing.linear });
+      } else {
+        // reset
+        y.value = withTiming(height, { easing: Easing.linear });
+      }
+    },
+  });
+
   const Header = useMemo(
     () => (
       <Animated.View entering={SlideInUp} style={styles.header}>
@@ -48,29 +95,51 @@ export default function App() {
   );
 
   return (
-    <ImageBackground source={wallpaper} style={styles.container}>
-      {/* Notification List */}
-      <NotificationsList
-        footerVisibility={footerVisibility}
-        footerHeight={footerHeight}
-        ListHeaderComponent={Header}
-      />
-
-      <Animated.View
-        entering={SlideInDown}
-        style={[styles.footer, animatedFooterStyle]}
+    <>
+      {/* Home Screen */}
+      <ImageBackground
+        source={home2}
+        style={{ width: "100%", height: "100%", ...StyleSheet.absoluteFill }}
       >
-        <View style={styles.icon}>
-          <MaterialCommunityIcons name="flashlight" size={24} color="white" />
-        </View>
+        {/* <PanGestureHandler onGestureEvent={unlockGestureHandler}>
+          <Animated.View style={styles.panGestureContainerLock} />
+        </PanGestureHandler> */}
+      </ImageBackground>
+      {/* Lock Screen */}
+      <Animated.View style={[styles.container, animatedContainerStyle]}>
+        <ImageBackground source={wallpaper} style={styles.container}>
+          {/* Notification List */}
+          <NotificationsList
+            footerVisibility={footerVisibility}
+            footerHeight={footerHeight}
+            ListHeaderComponent={Header}
+          />
 
-        <SwipeUpToOpen />
+          <Animated.View
+            entering={SlideInDown}
+            style={[styles.footer, animatedFooterStyle]}
+          >
+            <View style={styles.icon}>
+              <MaterialCommunityIcons
+                name="flashlight"
+                size={24}
+                color="white"
+              />
+            </View>
 
-        <View style={styles.icon}>
-          <Ionicons name="ios-camera" size={24} color="white" />
-        </View>
+            <SwipeUpToOpen />
+
+            <View style={styles.icon}>
+              <Ionicons name="ios-camera" size={24} color="white" />
+            </View>
+          </Animated.View>
+
+          <PanGestureHandler onGestureEvent={unlockGestureHandler}>
+            <Animated.View style={styles.panGestureContainerUnlock} />
+          </PanGestureHandler>
+        </ImageBackground>
       </Animated.View>
-    </ImageBackground>
+    </>
   );
 }
 
@@ -111,5 +180,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 50,
+  },
+  panGestureContainerUnlock: {
+    position: "absolute",
+    width: "100%",
+    height: 200,
+    bottom: 0,
+    left: 0,
   },
 });
