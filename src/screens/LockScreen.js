@@ -187,5 +187,10 @@ const styles = StyleSheet.create({
     height: 200,
     bottom: 0,
     left: 0,
+    transform: [
+      {
+        translateY: 100,
+      },
+    ],
   },
 });
